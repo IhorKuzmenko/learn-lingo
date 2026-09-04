@@ -1,0 +1,95 @@
+.header {
+  padding: 20px 0;
+  background-color: #fff;
+}
+
+.wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.4px;
+
+  color: #121417;
+}
+
+.navigation {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.navLink {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.25;
+
+  color: #121417;
+
+  transition: opacity 200ms ease;
+}
+
+.navLink:hover,
+.navLink:focus {
+  opacity: 0.7;
+}
+
+.auth {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.loginButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 0;
+
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.25;
+
+  color: #121417;
+  background-color: transparent;
+
+  cursor: pointer;
+}
+
+.registrationButton {
+  min-width: 166px;
+  padding: 14px 20px;
+
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.25;
+
+  color: #fff;
+  background-color: #121417;
+  border-radius: 12px;
+
+  cursor: pointer;
+
+  transition:
+    background-color 200ms ease,
+    transform 200ms ease;
+}
+
+.registrationButton:hover,
+.registrationButton:focus {
+  background-color: #2b2d30;
+}
+
+.registrationButton:active {
+  transform: scale(0.98);
+}
