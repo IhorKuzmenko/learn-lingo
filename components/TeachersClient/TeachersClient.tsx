@@ -1,33 +1,44 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import Filters, {
   type TeacherFilters,
 } from '@/components/Filters/Filters';
 import TeacherList from '@/components/TeacherList/TeacherList';
+import { getTeachers } from '@/lib/teachers';
 import type { Teacher } from '@/types/teacher';
 
 import styles from './TeachersClient.module.css';
 
-interface TeachersClientProps {
-  teachers: Teacher[];
-}
+export default function TeachersClient() {
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
 
-const INITIAL_VISIBLE_COUNT = 4;
-
-export default function TeachersClient({
-  teachers,
-}: TeachersClientProps) {
   const [filters, setFilters] = useState<TeacherFilters>({
     language: '',
     level: '',
     price: '',
   });
 
-  const [visibleCount, setVisibleCount] = useState(
-    INITIAL_VISIBLE_COUNT,
-  );
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadTeachers() {
+      try {
+        setIsLoading(true);
+
+        const data = await getTeachers(4);
+
+        setTeachers(data);
+      } catch (error) {
+        console.error('Failed to load teachers:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadTeachers();
+  }, []);
 
   const filteredTeachers = useMemo(() => {
     return teachers.filter((teacher) => {
@@ -47,48 +58,19 @@ export default function TeachersClient({
     });
   }, [teachers, filters]);
 
-  const visibleTeachers = filteredTeachers.slice(
-    0,
-    visibleCount,
-  );
-
-  const hasMore =
-    visibleCount < filteredTeachers.length;
-
-  const handleFiltersChange = (
-    newFilters: TeacherFilters,
-  ) => {
-    setFilters(newFilters);
-    setVisibleCount(INITIAL_VISIBLE_COUNT);
-  };
-
-  const handleLoadMore = () => {
-    setVisibleCount((previous) => previous + 4);
-  };
+  if (isLoading) {
+    return <p className={styles.status}>Loading teachers...</p>;
+  }
 
   return (
     <>
-      <Filters onChange={handleFiltersChange} />
+      <Filters onChange={setFilters} />
 
-      {visibleTeachers.length > 0 ? (
-        <>
-          <TeacherList teachers={visibleTeachers} />
-
-          {hasMore && (
-            <div className={styles.loadMoreWrapper}>
-              <button
-                type="button"
-                className={styles.loadMore}
-                onClick={handleLoadMore}
-              >
-                Load more
-              </button>
-            </div>
-          )}
-        </>
+      {filteredTeachers.length > 0 ? (
+        <TeacherList teachers={filteredTeachers} />
       ) : (
         <p className={styles.empty}>
-          No teachers found for the selected filters.
+          No teachers found.
         </p>
       )}
     </>
