@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 
 import AuthModal from '@/components/AuthModal/AuthModal';
+import BookingModal from '@/components/BookingModal/BookingModal';
 import Icon from '@/components/Icon/Icon';
 import { useAuth } from '@/hooks/useAuth';
 import { useFavorites } from '@/hooks/useFavorites';
@@ -20,6 +21,7 @@ export default function TeacherCard({
 }: TeacherCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
   const { user } = useAuth();
   const { isFavorite, toggleFavorite } = useFavorites();
@@ -175,22 +177,16 @@ export default function TeacherCard({
                     className={styles.review}
                   >
                     <div className={styles.reviewer}>
-                      <div
-                        className={styles.reviewerAvatar}
-                      >
+                      <div className={styles.reviewerAvatar}>
                         {review.reviewer_name.charAt(0)}
                       </div>
 
                       <div>
-                        <p
-                          className={styles.reviewerName}
-                        >
+                        <p className={styles.reviewerName}>
                           {review.reviewer_name}
                         </p>
 
-                        <div
-                          className={styles.reviewRating}
-                        >
+                        <div className={styles.reviewRating}>
                           <Icon
                             name="star"
                             width={16}
@@ -232,6 +228,7 @@ export default function TeacherCard({
             <button
               type="button"
               className={styles.bookButton}
+              onClick={() => setIsBookingModalOpen(true)}
             >
               Book trial lesson
             </button>
@@ -243,6 +240,13 @@ export default function TeacherCard({
         <AuthModal
           mode="login"
           onClose={() => setIsAuthModalOpen(false)}
+        />
+      )}
+
+      {isBookingModalOpen && (
+        <BookingModal
+          teacher={teacher}
+          onClose={() => setIsBookingModalOpen(false)}
         />
       )}
     </>

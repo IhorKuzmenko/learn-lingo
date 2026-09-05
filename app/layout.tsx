@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Roboto } from 'next/font/google';
+import { Toaster } from 'sonner';
 
 import Header from '@/components/Header/Header';
 import AuthProvider from '@/providers/AuthProvider';
@@ -30,6 +31,11 @@ export default function RootLayout({
           <Header />
           {children}
         </AuthProvider>
+
+        <Toaster
+          position="top-right"
+          richColors
+        />
       </body>
     </html>
   );
