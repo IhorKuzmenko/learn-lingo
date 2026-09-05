@@ -6,10 +6,12 @@ import Filters, {
   type TeacherFilters,
 } from '@/components/Filters/Filters';
 import TeacherList from '@/components/TeacherList/TeacherList';
-import { getTeachers } from '@/lib/teachers';
+import { getTeachersPage } from '@/lib/teachers';
 import type { Teacher } from '@/types/teacher';
 
 import styles from './TeachersClient.module.css';
+
+const TEACHERS_PER_PAGE = 4;
 
 export default function TeachersClient() {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
@@ -20,24 +22,37 @@ export default function TeachersClient() {
     price: '',
   });
 
+  const [lastKey, setLastKey] = useState<string | null>(null);
+
+  const [hasMore, setHasMore] = useState(true);
+
   const [isLoading, setIsLoading] = useState(true);
 
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+
   useEffect(() => {
-    async function loadTeachers() {
+    async function loadInitialTeachers() {
       try {
         setIsLoading(true);
 
-        const data = await getTeachers(4);
+        const result = await getTeachersPage(
+          TEACHERS_PER_PAGE,
+        );
 
-        setTeachers(data);
+        setTeachers(result.teachers);
+        setLastKey(result.lastKey);
+        setHasMore(result.hasMore);
       } catch (error) {
-        console.error('Failed to load teachers:', error);
+        console.error(
+          'Failed to load teachers:',
+          error,
+        );
       } finally {
         setIsLoading(false);
       }
     }
 
-    loadTeachers();
+    loadInitialTeachers();
   }, []);
 
   const filteredTeachers = useMemo(() => {
@@ -54,12 +69,50 @@ export default function TeachersClient() {
         !filters.price ||
         teacher.price_per_hour <= Number(filters.price);
 
-      return matchesLanguage && matchesLevel && matchesPrice;
+      return (
+        matchesLanguage &&
+        matchesLevel &&
+        matchesPrice
+      );
     });
   }, [teachers, filters]);
 
+  const handleLoadMore = async () => {
+    if (!lastKey || isLoadingMore) {
+      return;
+    }
+
+    try {
+      setIsLoadingMore(true);
+
+      const result = await getTeachersPage(
+        TEACHERS_PER_PAGE,
+        lastKey,
+      );
+
+      setTeachers((previousTeachers) => [
+        ...previousTeachers,
+        ...result.teachers,
+      ]);
+
+      setLastKey(result.lastKey);
+      setHasMore(result.hasMore);
+    } catch (error) {
+      console.error(
+        'Failed to load more teachers:',
+        error,
+      );
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
+
   if (isLoading) {
-    return <p className={styles.status}>Loading teachers...</p>;
+    return (
+      <p className={styles.status}>
+        Loading teachers...
+      </p>
+    );
   }
 
   return (
@@ -67,7 +120,26 @@ export default function TeachersClient() {
       <Filters onChange={setFilters} />
 
       {filteredTeachers.length > 0 ? (
-        <TeacherList teachers={filteredTeachers} />
+        <>
+          <TeacherList
+            teachers={filteredTeachers}
+          />
+
+          {hasMore && (
+            <div className={styles.loadMoreWrapper}>
+              <button
+                type="button"
+                className={styles.loadMore}
+                onClick={handleLoadMore}
+                disabled={isLoadingMore}
+              >
+                {isLoadingMore
+                  ? 'Loading...'
+                  : 'Load more'}
+              </button>
+            </div>
+          )}
+        </>
       ) : (
         <p className={styles.empty}>
           No teachers found.

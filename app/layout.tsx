@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Roboto } from 'next/font/google';
 
 import Header from '@/components/Header/Header';
+import AuthProvider from '@/providers/AuthProvider';
 
 import './globals.css';
 
@@ -13,7 +14,8 @@ const roboto = Roboto({
 
 export const metadata: Metadata = {
   title: 'LearnLingo',
-  description: 'Learn languages with professional teachers online',
+  description:
+    'Learn languages with professional teachers online',
 };
 
 export default function RootLayout({
@@ -24,8 +26,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={roboto.variable}>
-        <Header />
-        {children}
+        <AuthProvider>
+          <Header />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );
