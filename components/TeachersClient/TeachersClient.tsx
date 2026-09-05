@@ -6,7 +6,10 @@ import Filters, {
   type TeacherFilters,
 } from '@/components/Filters/Filters';
 import TeacherList from '@/components/TeacherList/TeacherList';
-import { getTeachersPage } from '@/lib/teachers';
+import {
+  getAllTeachers,
+  getTeachersPage,
+} from '@/lib/teachers';
 import type { Teacher } from '@/types/teacher';
 
 import styles from './TeachersClient.module.css';
@@ -15,6 +18,7 @@ const TEACHERS_PER_PAGE = 4;
 
 export default function TeachersClient() {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [allTeachers, setAllTeachers] = useState<Teacher[]>([]);
 
   const [filters, setFilters] = useState<TeacherFilters>({
     language: '',
@@ -23,12 +27,19 @@ export default function TeachersClient() {
   });
 
   const [lastKey, setLastKey] = useState<string | null>(null);
-
   const [hasMore, setHasMore] = useState(true);
 
   const [isLoading, setIsLoading] = useState(true);
-
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [isFiltering, setIsFiltering] = useState(false);
+
+  const [visibleFilteredCount, setVisibleFilteredCount] =
+    useState(TEACHERS_PER_PAGE);
+
+  const hasActiveFilters =
+    filters.language !== '' ||
+    filters.level !== '' ||
+    filters.price !== '';
 
   useEffect(() => {
     async function loadInitialTeachers() {
@@ -55,8 +66,37 @@ export default function TeachersClient() {
     loadInitialTeachers();
   }, []);
 
+  useEffect(() => {
+    if (!hasActiveFilters || allTeachers.length > 0) {
+      return;
+    }
+
+    async function loadAllTeachers() {
+      try {
+        setIsFiltering(true);
+
+        const result = await getAllTeachers();
+
+        setAllTeachers(result);
+      } catch (error) {
+        console.error(
+          'Failed to load teachers for filtering:',
+          error,
+        );
+      } finally {
+        setIsFiltering(false);
+      }
+    }
+
+    loadAllTeachers();
+  }, [hasActiveFilters, allTeachers.length]);
+
   const filteredTeachers = useMemo(() => {
-    return teachers.filter((teacher) => {
+    if (!hasActiveFilters) {
+      return teachers;
+    }
+
+    return allTeachers.filter((teacher) => {
       const matchesLanguage =
         !filters.language ||
         teacher.languages.includes(filters.language);
@@ -75,9 +115,38 @@ export default function TeachersClient() {
         matchesPrice
       );
     });
-  }, [teachers, filters]);
+  }, [
+    allTeachers,
+    teachers,
+    filters,
+    hasActiveFilters,
+  ]);
+
+  const visibleTeachers = hasActiveFilters
+    ? filteredTeachers.slice(0, visibleFilteredCount)
+    : filteredTeachers;
+
+  const hasMoreFilteredTeachers =
+    hasActiveFilters &&
+    visibleFilteredCount < filteredTeachers.length;
+
+  const handleFiltersChange = (
+    newFilters: TeacherFilters,
+  ) => {
+    setFilters(newFilters);
+    setVisibleFilteredCount(TEACHERS_PER_PAGE);
+  };
 
   const handleLoadMore = async () => {
+    if (hasActiveFilters) {
+      setVisibleFilteredCount(
+        (previousCount) =>
+          previousCount + TEACHERS_PER_PAGE,
+      );
+
+      return;
+    }
+
     if (!lastKey || isLoadingMore) {
       return;
     }
@@ -115,17 +184,28 @@ export default function TeachersClient() {
     );
   }
 
+  if (hasActiveFilters && isFiltering) {
+    return (
+      <>
+        <Filters onChange={handleFiltersChange} />
+
+        <p className={styles.status}>
+          Filtering teachers...
+        </p>
+      </>
+    );
+  }
+
   return (
     <>
-      <Filters onChange={setFilters} />
+      <Filters onChange={handleFiltersChange} />
 
-      {filteredTeachers.length > 0 ? (
+      {visibleTeachers.length > 0 ? (
         <>
-          <TeacherList
-            teachers={filteredTeachers}
-          />
+          <TeacherList teachers={visibleTeachers} />
 
-          {hasMore && (
+          {((!hasActiveFilters && hasMore) ||
+            hasMoreFilteredTeachers) && (
             <div className={styles.loadMoreWrapper}>
               <button
                 type="button"
