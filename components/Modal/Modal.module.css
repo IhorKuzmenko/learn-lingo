@@ -1,0 +1,54 @@
+.backdrop {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  background-color: rgb(18 20 23 / 60%);
+}
+
+.modal {
+  position: relative;
+
+  width: 100%;
+  max-width: 566px;
+
+  padding: 64px;
+
+  background-color: #fff;
+  border-radius: 30px;
+}
+
+.closeButton {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  color: #121417;
+  background-color: transparent;
+
+  cursor: pointer;
+}
+
+@media screen and (max-width: 767px) {
+  .modal {
+    max-width: 500px;
+    padding: 48px 24px 32px;
+  }
+
+  .closeButton {
+    top: 16px;
+    right: 16px;
+  }
+}
