@@ -104,6 +104,14 @@
   cursor: pointer;
 }
 
+.favoriteButtonActive {
+  color: var(--color-yellow);
+}
+
+.favoriteButtonActive svg {
+  fill: var(--color-yellow);
+}
+
 .name {
   margin-bottom: 32px;
 

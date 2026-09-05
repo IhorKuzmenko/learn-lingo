@@ -1,9 +1,13 @@
 'use client';
 
+'use client';
+
 import Image from 'next/image';
 import { useState } from 'react';
 
 import Icon from '@/components/Icon/Icon';
+import { useAuth } from '@/hooks/useAuth';
+import { useFavorites } from '@/hooks/useFavorites';
 import type { Teacher } from '@/types/teacher';
 
 import styles from './TeacherCard.module.css';
@@ -16,6 +20,27 @@ export default function TeacherCard({
   teacher,
 }: TeacherCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+
+  const { user } = useAuth();
+  const { isFavorite, toggleFavorite } = useFavorites();
+
+  const favorite = isFavorite(teacher.id);
+
+  const handleFavoriteClick = async () => {
+    if (!user) {
+      alert('Please log in to add teachers to favorites.');
+      return;
+    }
+
+    try {
+      await toggleFavorite(teacher.id);
+    } catch (error) {
+      console.error(
+        'Failed to update favorites:',
+        error,
+      );
+    }
+  };
 
   return (
     <article className={styles.card}>
@@ -67,12 +92,19 @@ export default function TeacherCard({
             </span>
 
             <button
-              type="button"
-              className={styles.favoriteButton}
-              aria-label="Add teacher to favorites"
-            >
-              <Icon name="like" width={26} height={26} />
-            </button>
+  type="button"
+  className={`${styles.favoriteButton} ${
+    favorite ? styles.favoriteButtonActive : ''
+  }`}
+  onClick={handleFavoriteClick}
+  aria-label={
+    favorite
+      ? 'Remove teacher from favorites'
+      : 'Add teacher to favorites'
+  }
+>
+  <Icon name="like" width={26} height={26} />
+</button>
           </div>
         </div>
 
