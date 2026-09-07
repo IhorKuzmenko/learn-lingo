@@ -1,24 +1,22 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import { useState } from 'react';
+import Image from "next/image";
+import { useState } from "react";
 
-import AuthModal from '@/components/AuthModal/AuthModal';
-import BookingModal from '@/components/BookingModal/BookingModal';
-import Icon from '@/components/Icon/Icon';
-import { useAuth } from '@/hooks/useAuth';
-import { useFavorites } from '@/hooks/useFavorites';
-import type { Teacher } from '@/types/teacher';
+import AuthModal from "@/components/AuthModal/AuthModal";
+import BookingModal from "@/components/BookingModal/BookingModal";
+import Icon from "@/components/Icon/Icon";
+import { useAuth } from "@/hooks/useAuth";
+import { useFavorites } from "@/hooks/useFavorites";
+import type { Teacher } from "@/types/teacher";
 
-import styles from './TeacherCard.module.css';
+import styles from "./TeacherCard.module.css";
 
 interface TeacherCardProps {
   teacher: Teacher;
 }
 
-export default function TeacherCard({
-  teacher,
-}: TeacherCardProps) {
+export default function TeacherCard({ teacher }: TeacherCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
@@ -37,7 +35,7 @@ export default function TeacherCard({
     try {
       await toggleFavorite(teacher.id);
     } catch (error) {
-      console.error('Failed to update favorites:', error);
+      console.error("Failed to update favorites:", error);
     }
   };
 
@@ -67,35 +65,25 @@ export default function TeacherCard({
 
             <div className={styles.statistics}>
               <div className={styles.statItem}>
-                <Icon
-                  name="book-open"
-                  width={16}
-                  height={16}
-                />
+                <Icon name="book-open" width={16} height={16} />
                 <span>Lessons online</span>
               </div>
 
               <span className={styles.divider} />
 
-              <span>
-                Lessons done: {teacher.lessons_done}
-              </span>
+              <span>Lessons done: {teacher.lessons_done}</span>
 
               <span className={styles.divider} />
 
               <div className={styles.statItem}>
-                <Icon
-                  name="star"
-                  width={16}
-                  height={16}
-                />
+                <Icon name="star" width={16} height={16} />
                 <span>Rating: {teacher.rating}</span>
               </div>
 
               <span className={styles.divider} />
 
               <span>
-                Price / 1 hour:{' '}
+                Price / 1 hour:{" "}
                 <strong className={styles.price}>
                   {teacher.price_per_hour}$
                 </strong>
@@ -104,20 +92,16 @@ export default function TeacherCard({
               <button
                 type="button"
                 className={`${styles.favoriteButton} ${
-                  favorite ? styles.favoriteButtonActive : ''
+                  favorite ? styles.favoriteButtonActive : ""
                 }`}
                 onClick={handleFavoriteClick}
                 aria-label={
                   favorite
-                    ? 'Remove teacher from favorites'
-                    : 'Add teacher to favorites'
+                    ? "Remove teacher from favorites"
+                    : "Add teacher to favorites"
                 }
               >
-                <Icon
-                  name="like"
-                  width={26}
-                  height={26}
-                />
+                <Icon name="like" width={26} height={26} />
               </button>
             </div>
           </div>
@@ -128,29 +112,23 @@ export default function TeacherCard({
 
           <div className={styles.information}>
             <p>
-              <span className={styles.infoLabel}>
-                Speaks:{' '}
-              </span>
+              <span className={styles.infoLabel}>Speaks: </span>
 
               <span className={styles.languages}>
-                {teacher.languages.join(', ')}
+                {teacher.languages.join(", ")}
               </span>
             </p>
 
             <p>
-              <span className={styles.infoLabel}>
-                Lesson Info:{' '}
-              </span>
+              <span className={styles.infoLabel}>Lesson Info: </span>
 
               <span>{teacher.lesson_info}</span>
             </p>
 
             <p>
-              <span className={styles.infoLabel}>
-                Conditions:{' '}
-              </span>
+              <span className={styles.infoLabel}>Conditions: </span>
 
-              <span>{teacher.conditions.join(' ')}</span>
+              <span>{teacher.conditions.join(" ")}</span>
             </p>
           </div>
 
@@ -166,9 +144,7 @@ export default function TeacherCard({
 
           {isExpanded && (
             <div className={styles.expanded}>
-              <p className={styles.experience}>
-                {teacher.experience}
-              </p>
+              <p className={styles.experience}>{teacher.experience}</p>
 
               <ul className={styles.reviews}>
                 {teacher.reviews.map((review, index) => (
@@ -187,22 +163,14 @@ export default function TeacherCard({
                         </p>
 
                         <div className={styles.reviewRating}>
-                          <Icon
-                            name="star"
-                            width={16}
-                            height={16}
-                          />
+                          <Icon name="star" width={16} height={16} />
 
-                          <span>
-                            {review.reviewer_rating.toFixed(1)}
-                          </span>
+                          <span>{review.reviewer_rating.toFixed(1)}</span>
                         </div>
                       </div>
                     </div>
 
-                    <p className={styles.comment}>
-                      {review.comment}
-                    </p>
+                    <p className={styles.comment}>{review.comment}</p>
                   </li>
                 ))}
               </ul>
@@ -214,9 +182,7 @@ export default function TeacherCard({
               <li
                 key={level}
                 className={`${styles.level} ${
-                  index === 0
-                    ? styles.activeLevel
-                    : ''
+                  index === 0 ? styles.activeLevel : ""
                 }`}
               >
                 #{level}
@@ -237,10 +203,7 @@ export default function TeacherCard({
       </article>
 
       {isAuthModalOpen && (
-        <AuthModal
-          mode="login"
-          onClose={() => setIsAuthModalOpen(false)}
-        />
+        <AuthModal mode="login" onClose={() => setIsAuthModalOpen(false)} />
       )}
 
       {isBookingModalOpen && (

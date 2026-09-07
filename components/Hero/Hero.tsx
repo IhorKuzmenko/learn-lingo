@@ -1,15 +1,33 @@
-import Image from 'next/image';
-import Link from 'next/link';
+"use client";
 
-import styles from './Hero.module.css';
+import Image from "next/image";
+import Link from "next/link";
+
+import { themes } from "@/constants/themes";
+import { useTheme } from "@/hooks/useTheme";
+
+import styles from "./Hero.module.css";
 
 export default function Hero() {
+  const { theme } = useTheme();
+  const currentTheme = themes[theme];
+
   return (
     <section className={styles.hero}>
       <div className={styles.content}>
         <h1 className={styles.title}>
-          Unlock your potential with the best{' '}
-          <span className={styles.accent}>language</span> tutors
+          Unlock your potential with the best{" "}
+          <span
+            className={styles.accent}
+            style={
+              {
+                "--theme-light": currentTheme.light,
+              } as React.CSSProperties
+            }
+          >
+            language
+          </span>
+          tutors
         </h1>
 
         <p className={styles.description}>
@@ -18,14 +36,25 @@ export default function Hero() {
           highly qualified and experienced tutors.
         </p>
 
-        <Link href="/teachers" className={styles.button}>
+        <Link
+          href="/teachers"
+          className={styles.button}
+          style={{
+            backgroundColor: currentTheme.main,
+          }}
+        >
           Get started
         </Link>
       </div>
 
-      <div className={styles.imageWrapper}>
+      <div
+        className={styles.imageWrapper}
+        style={{
+          backgroundColor: currentTheme.light,
+        }}
+      >
         <Image
-          src="/images/hero-image-1.webp"
+          src={currentTheme.heroImage}
           alt="Language learning"
           fill
           priority

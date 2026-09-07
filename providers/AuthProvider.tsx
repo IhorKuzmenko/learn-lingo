@@ -1,11 +1,6 @@
-'use client';
+"use client";
 
-import {
-  createContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from 'react';
+import { createContext, useEffect, useState, type ReactNode } from "react";
 
 import {
   createUserWithEmailAndPassword,
@@ -13,73 +8,55 @@ import {
   signInWithEmailAndPassword,
   signOut,
   updateProfile,
-} from 'firebase/auth';
+} from "firebase/auth";
 
-import { auth } from '@/lib/firebase';
-import type { AppUser } from '@/types/user';
+import { auth } from "@/lib/firebase";
+import type { AppUser } from "@/types/user";
 
 interface AuthContextValue {
   user: AppUser | null;
   isLoading: boolean;
-  register: (
-    name: string,
-    email: string,
-    password: string,
-  ) => Promise<void>;
-  login: (
-    email: string,
-    password: string,
-  ) => Promise<void>;
+  register: (name: string, email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
-export const AuthContext =
-  createContext<AuthContextValue | null>(null);
+export const AuthContext = createContext<AuthContextValue | null>(null);
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-export default function AuthProvider({
-  children,
-}: AuthProviderProps) {
+export default function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<AppUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(
-      auth,
-      (firebaseUser) => {
-        if (!firebaseUser) {
-          setUser(null);
-          setIsLoading(false);
-          return;
-        }
-
-        setUser({
-          uid: firebaseUser.uid,
-          email: firebaseUser.email,
-          displayName: firebaseUser.displayName,
-        });
-
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (!firebaseUser) {
+        setUser(null);
         setIsLoading(false);
-      },
-    );
+        return;
+      }
+
+      setUser({
+        uid: firebaseUser.uid,
+        email: firebaseUser.email,
+        displayName: firebaseUser.displayName,
+      });
+
+      setIsLoading(false);
+    });
 
     return unsubscribe;
   }, []);
 
-  const register = async (
-    name: string,
-    email: string,
-    password: string,
-  ) => {
-    const credential =
-      await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password,
-      );
+  const register = async (name: string, email: string, password: string) => {
+    const credential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password,
+    );
 
     await updateProfile(credential.user, {
       displayName: name,
@@ -92,15 +69,8 @@ export default function AuthProvider({
     });
   };
 
-  const login = async (
-    email: string,
-    password: string,
-  ) => {
-    await signInWithEmailAndPassword(
-      auth,
-      email,
-      password,
-    );
+  const login = async (email: string, password: string) => {
+    await signInWithEmailAndPassword(auth, email, password);
   };
 
   const logout = async () => {

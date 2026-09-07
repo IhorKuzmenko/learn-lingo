@@ -1,24 +1,21 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
-import TeacherList from '@/components/TeacherList/TeacherList';
-import { useAuth } from '@/hooks/useAuth';
-import { useFavorites } from '@/hooks/useFavorites';
-import { getTeachersByIds } from '@/lib/teachers';
-import type { Teacher } from '@/types/teacher';
+import TeacherList from "@/components/TeacherList/TeacherList";
+import { useAuth } from "@/hooks/useAuth";
+import { useFavorites } from "@/hooks/useFavorites";
+import { getTeachersByIds } from "@/lib/teachers";
+import type { Teacher } from "@/types/teacher";
 
-import styles from './FavoritesClient.module.css';
+import styles from "./FavoritesClient.module.css";
 
 export default function FavoritesClient() {
   const router = useRouter();
 
   const { user, isLoading: isAuthLoading } = useAuth();
-  const {
-    favorites,
-    isLoading: isFavoritesLoading,
-  } = useFavorites();
+  const { favorites, isLoading: isFavoritesLoading } = useFavorites();
 
   const [teachers, setTeachers] = useState<Teacher[]>([]);
 
@@ -28,7 +25,7 @@ export default function FavoritesClient() {
     }
 
     if (!user) {
-      router.replace('/');
+      router.replace("/");
     }
   }, [user, isAuthLoading, router]);
 
@@ -46,10 +43,7 @@ export default function FavoritesClient() {
         }
       })
       .catch((error) => {
-        console.error(
-          'Failed to load favorite teachers:',
-          error,
-        );
+        console.error("Failed to load favorite teachers:", error);
       });
 
     return () => {
@@ -58,11 +52,7 @@ export default function FavoritesClient() {
   }, [user, favorites, isFavoritesLoading]);
 
   if (isAuthLoading || isFavoritesLoading) {
-    return (
-      <p className={styles.status}>
-        Loading favorites...
-      </p>
-    );
+    return <p className={styles.status}>Loading favorites...</p>;
   }
 
   if (!user) {

@@ -1,15 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import {
-  onValue,
-  ref,
-  remove,
-  set,
-} from 'firebase/database';
+import { useEffect, useState } from "react";
+import { onValue, ref, remove, set } from "firebase/database";
 
-import { useAuth } from '@/hooks/useAuth';
-import { database } from '@/lib/firebase';
+import { useAuth } from "@/hooks/useAuth";
+import { database } from "@/lib/firebase";
 
 export function useFavorites() {
   const { user } = useAuth();
@@ -22,26 +17,20 @@ export function useFavorites() {
       return;
     }
 
-    const favoritesRef = ref(
-      database,
-      `users/${user.uid}/favorites`,
-    );
+    const favoritesRef = ref(database, `users/${user.uid}/favorites`);
 
-    const unsubscribe = onValue(
-      favoritesRef,
-      (snapshot) => {
-        if (!snapshot.exists()) {
-          setFavorites([]);
-          setIsLoading(false);
-          return;
-        }
-
-        const data = snapshot.val();
-
-        setFavorites(Object.keys(data));
+    const unsubscribe = onValue(favoritesRef, (snapshot) => {
+      if (!snapshot.exists()) {
+        setFavorites([]);
         setIsLoading(false);
-      },
-    );
+        return;
+      }
+
+      const data = snapshot.val();
+
+      setFavorites(Object.keys(data));
+      setIsLoading(false);
+    });
 
     return unsubscribe;
   }, [user]);
@@ -67,9 +56,7 @@ export function useFavorites() {
     await set(favoriteRef, true);
   };
 
-  const removeFavorite = async (
-    teacherId: string,
-  ) => {
+  const removeFavorite = async (teacherId: string) => {
     if (!user) {
       return;
     }
@@ -82,9 +69,7 @@ export function useFavorites() {
     await remove(favoriteRef);
   };
 
-  const toggleFavorite = async (
-    teacherId: string,
-  ) => {
+  const toggleFavorite = async (teacherId: string) => {
     if (!user) {
       return;
     }

@@ -1,6 +1,6 @@
-import type { PropsWithChildren } from 'react';
+import type { PropsWithChildren } from "react";
 
-import styles from './Container.module.css';
+import styles from "./Container.module.css";
 
 interface ContainerProps extends PropsWithChildren {
   className?: string;
@@ -8,11 +8,7 @@ interface ContainerProps extends PropsWithChildren {
 
 export default function Container({
   children,
-  className = '',
+  className = "",
 }: ContainerProps) {
-  return (
-    <div className={`${styles.container} ${className}`}>
-      {children}
-    </div>
-  );
+  return <div className={`${styles.container} ${className}`}>{children}</div>;
 }

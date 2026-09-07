@@ -1,18 +1,13 @@
-'use client';
+"use client";
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from "react";
 
-import Filters, {
-  type TeacherFilters,
-} from '@/components/Filters/Filters';
-import TeacherList from '@/components/TeacherList/TeacherList';
-import {
-  getAllTeachers,
-  getTeachersPage,
-} from '@/lib/teachers';
-import type { Teacher } from '@/types/teacher';
+import Filters, { type TeacherFilters } from "@/components/Filters/Filters";
+import TeacherList from "@/components/TeacherList/TeacherList";
+import { getAllTeachers, getTeachersPage } from "@/lib/teachers";
+import type { Teacher } from "@/types/teacher";
 
-import styles from './TeachersClient.module.css';
+import styles from "./TeachersClient.module.css";
 
 const TEACHERS_PER_PAGE = 4;
 
@@ -21,9 +16,9 @@ export default function TeachersClient() {
   const [allTeachers, setAllTeachers] = useState<Teacher[]>([]);
 
   const [filters, setFilters] = useState<TeacherFilters>({
-    language: '',
-    level: '',
-    price: '',
+    language: "",
+    level: "",
+    price: "",
   });
 
   const [lastKey, setLastKey] = useState<string | null>(null);
@@ -37,27 +32,20 @@ export default function TeachersClient() {
     useState(TEACHERS_PER_PAGE);
 
   const hasActiveFilters =
-    filters.language !== '' ||
-    filters.level !== '' ||
-    filters.price !== '';
+    filters.language !== "" || filters.level !== "" || filters.price !== "";
 
   useEffect(() => {
     async function loadInitialTeachers() {
       try {
         setIsLoading(true);
 
-        const result = await getTeachersPage(
-          TEACHERS_PER_PAGE,
-        );
+        const result = await getTeachersPage(TEACHERS_PER_PAGE);
 
         setTeachers(result.teachers);
         setLastKey(result.lastKey);
         setHasMore(result.hasMore);
       } catch (error) {
-        console.error(
-          'Failed to load teachers:',
-          error,
-        );
+        console.error("Failed to load teachers:", error);
       } finally {
         setIsLoading(false);
       }
@@ -79,10 +67,7 @@ export default function TeachersClient() {
 
         setAllTeachers(result);
       } catch (error) {
-        console.error(
-          'Failed to load teachers for filtering:',
-          error,
-        );
+        console.error("Failed to load teachers for filtering:", error);
       } finally {
         setIsFiltering(false);
       }
@@ -98,41 +83,26 @@ export default function TeachersClient() {
 
     return allTeachers.filter((teacher) => {
       const matchesLanguage =
-        !filters.language ||
-        teacher.languages.includes(filters.language);
+        !filters.language || teacher.languages.includes(filters.language);
 
       const matchesLevel =
-        !filters.level ||
-        teacher.levels.includes(filters.level);
+        !filters.level || teacher.levels.includes(filters.level);
 
       const matchesPrice =
-        !filters.price ||
-        teacher.price_per_hour <= Number(filters.price);
+        !filters.price || teacher.price_per_hour <= Number(filters.price);
 
-      return (
-        matchesLanguage &&
-        matchesLevel &&
-        matchesPrice
-      );
+      return matchesLanguage && matchesLevel && matchesPrice;
     });
-  }, [
-    allTeachers,
-    teachers,
-    filters,
-    hasActiveFilters,
-  ]);
+  }, [allTeachers, teachers, filters, hasActiveFilters]);
 
   const visibleTeachers = hasActiveFilters
     ? filteredTeachers.slice(0, visibleFilteredCount)
     : filteredTeachers;
 
   const hasMoreFilteredTeachers =
-    hasActiveFilters &&
-    visibleFilteredCount < filteredTeachers.length;
+    hasActiveFilters && visibleFilteredCount < filteredTeachers.length;
 
-  const handleFiltersChange = (
-    newFilters: TeacherFilters,
-  ) => {
+  const handleFiltersChange = (newFilters: TeacherFilters) => {
     setFilters(newFilters);
     setVisibleFilteredCount(TEACHERS_PER_PAGE);
   };
@@ -140,8 +110,7 @@ export default function TeachersClient() {
   const handleLoadMore = async () => {
     if (hasActiveFilters) {
       setVisibleFilteredCount(
-        (previousCount) =>
-          previousCount + TEACHERS_PER_PAGE,
+        (previousCount) => previousCount + TEACHERS_PER_PAGE,
       );
 
       return;
@@ -154,10 +123,7 @@ export default function TeachersClient() {
     try {
       setIsLoadingMore(true);
 
-      const result = await getTeachersPage(
-        TEACHERS_PER_PAGE,
-        lastKey,
-      );
+      const result = await getTeachersPage(TEACHERS_PER_PAGE, lastKey);
 
       setTeachers((previousTeachers) => [
         ...previousTeachers,
@@ -167,21 +133,14 @@ export default function TeachersClient() {
       setLastKey(result.lastKey);
       setHasMore(result.hasMore);
     } catch (error) {
-      console.error(
-        'Failed to load more teachers:',
-        error,
-      );
+      console.error("Failed to load more teachers:", error);
     } finally {
       setIsLoadingMore(false);
     }
   };
 
   if (isLoading) {
-    return (
-      <p className={styles.status}>
-        Loading teachers...
-      </p>
-    );
+    return <p className={styles.status}>Loading teachers...</p>;
   }
 
   if (hasActiveFilters && isFiltering) {
@@ -189,9 +148,7 @@ export default function TeachersClient() {
       <>
         <Filters onChange={handleFiltersChange} />
 
-        <p className={styles.status}>
-          Filtering teachers...
-        </p>
+        <p className={styles.status}>Filtering teachers...</p>
       </>
     );
   }
@@ -204,8 +161,7 @@ export default function TeachersClient() {
         <>
           <TeacherList teachers={visibleTeachers} />
 
-          {((!hasActiveFilters && hasMore) ||
-            hasMoreFilteredTeachers) && (
+          {((!hasActiveFilters && hasMore) || hasMoreFilteredTeachers) && (
             <div className={styles.loadMoreWrapper}>
               <button
                 type="button"
@@ -213,17 +169,13 @@ export default function TeachersClient() {
                 onClick={handleLoadMore}
                 disabled={isLoadingMore}
               >
-                {isLoadingMore
-                  ? 'Loading...'
-                  : 'Load more'}
+                {isLoadingMore ? "Loading..." : "Load more"}
               </button>
             </div>
           )}
         </>
       ) : (
-        <p className={styles.empty}>
-          No teachers found.
-        </p>
+        <p className={styles.empty}>No teachers found.</p>
       )}
     </>
   );

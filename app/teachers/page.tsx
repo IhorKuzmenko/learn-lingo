@@ -1,7 +1,7 @@
-import Container from '@/components/Container/Container';
-import TeachersClient from '@/components/TeachersClient/TeachersClient';
+import Container from "@/components/Container/Container";
+import TeachersClient from "@/components/TeachersClient/TeachersClient";
 
-import styles from './TeachersPage.module.css';
+import styles from "./TeachersPage.module.css";
 
 export default function TeachersPage() {
   return (

@@ -1,0 +1,33 @@
+.switcher {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+
+  margin-bottom: 16px;
+}
+
+.colorButton {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+
+  border: 2px solid transparent;
+  border-radius: 50%;
+
+  cursor: pointer;
+
+  transition:
+    transform 200ms ease,
+    border-color 200ms ease;
+}
+
+.colorButton:hover,
+.colorButton:focus {
+  transform: scale(1.12);
+}
+
+.active {
+  border-color: #121417;
+  transform: scale(1.12);
+}

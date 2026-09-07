@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
 import {
   languageOptions,
   levelOptions,
   priceOptions,
-} from '@/constants/filters';
+} from "@/constants/filters";
 
-import styles from './Filters.module.css';
+import styles from "./Filters.module.css";
 
 export interface TeacherFilters {
   language: string;
@@ -22,15 +22,12 @@ interface FiltersProps {
 
 export default function Filters({ onChange }: FiltersProps) {
   const [filters, setFilters] = useState<TeacherFilters>({
-    language: '',
-    level: '',
-    price: '',
+    language: "",
+    level: "",
+    price: "",
   });
 
-  const handleChange = (
-    field: keyof TeacherFilters,
-    value: string,
-  ) => {
+  const handleChange = (field: keyof TeacherFilters, value: string) => {
     const newFilters = {
       ...filters,
       [field]: value,
@@ -48,9 +45,7 @@ export default function Filters({ onChange }: FiltersProps) {
         <select
           className={styles.select}
           value={filters.language}
-          onChange={(event) =>
-            handleChange('language', event.target.value)
-          }
+          onChange={(event) => handleChange("language", event.target.value)}
         >
           <option value="">All languages</option>
 
@@ -68,9 +63,7 @@ export default function Filters({ onChange }: FiltersProps) {
         <select
           className={`${styles.select} ${styles.levelSelect}`}
           value={filters.level}
-          onChange={(event) =>
-            handleChange('level', event.target.value)
-          }
+          onChange={(event) => handleChange("level", event.target.value)}
         >
           <option value="">All levels</option>
 
@@ -88,9 +81,7 @@ export default function Filters({ onChange }: FiltersProps) {
         <select
           className={`${styles.select} ${styles.priceSelect}`}
           value={filters.price}
-          onChange={(event) =>
-            handleChange('price', event.target.value)
-          }
+          onChange={(event) => handleChange("price", event.target.value)}
         >
           <option value="">All prices</option>
 

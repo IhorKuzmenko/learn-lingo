@@ -1,7 +1,7 @@
-import Container from '@/components/Container/Container';
-import FavoritesClient from '@/components/FavoritesClient/FavoritesClient';
+import Container from "@/components/Container/Container";
+import FavoritesClient from "@/components/FavoritesClient/FavoritesClient";
 
-import styles from './FavoritesPage.module.css';
+import styles from "./FavoritesPage.module.css";
 
 export default function FavoritesPage() {
   return (

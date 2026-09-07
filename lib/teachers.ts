@@ -5,10 +5,10 @@ import {
   query,
   ref,
   startAfter,
-} from 'firebase/database';
+} from "firebase/database";
 
-import { database } from '@/lib/firebase';
-import type { Teacher } from '@/types/teacher';
+import { database } from "@/lib/firebase";
+import type { Teacher } from "@/types/teacher";
 
 interface TeachersPageResult {
   teachers: Teacher[];
@@ -20,7 +20,7 @@ export async function getTeachersPage(
   limit = 4,
   lastKey?: string | null,
 ): Promise<TeachersPageResult> {
-  const teachersRef = ref(database, 'teachers');
+  const teachersRef = ref(database, "teachers");
 
   const teachersQuery = lastKey
     ? query(
@@ -29,11 +29,7 @@ export async function getTeachersPage(
         startAfter(lastKey),
         limitToFirst(limit + 1),
       )
-    : query(
-        teachersRef,
-        orderByKey(),
-        limitToFirst(limit + 1),
-      );
+    : query(teachersRef, orderByKey(), limitToFirst(limit + 1));
 
   const snapshot = await get(teachersQuery);
 
@@ -51,16 +47,12 @@ export async function getTeachersPage(
 
   const hasMore = entries.length > limit;
 
-  const visibleEntries = hasMore
-    ? entries.slice(0, limit)
-    : entries;
+  const visibleEntries = hasMore ? entries.slice(0, limit) : entries;
 
-  const teachers = visibleEntries.map(
-    ([id, teacher]) => ({
-      id,
-      ...(teacher as Omit<Teacher, 'id'>),
-    }),
-  );
+  const teachers = visibleEntries.map(([id, teacher]) => ({
+    id,
+    ...(teacher as Omit<Teacher, "id">),
+  }));
 
   return {
     teachers,
@@ -72,9 +64,7 @@ export async function getTeachersPage(
   };
 }
 
-export async function getTeachersByIds(
-  ids: string[],
-): Promise<Teacher[]> {
+export async function getTeachersByIds(ids: string[]): Promise<Teacher[]> {
   if (ids.length === 0) {
     return [];
   }
@@ -90,18 +80,16 @@ export async function getTeachersByIds(
 
       return {
         id,
-        ...(snapshot.val() as Omit<Teacher, 'id'>),
+        ...(snapshot.val() as Omit<Teacher, "id">),
       };
     }),
   );
 
-  return teachers.filter(
-    (teacher): teacher is Teacher => teacher !== null,
-  );
+  return teachers.filter((teacher): teacher is Teacher => teacher !== null);
 }
 
 export async function getAllTeachers(): Promise<Teacher[]> {
-  const teachersRef = ref(database, 'teachers');
+  const teachersRef = ref(database, "teachers");
   const snapshot = await get(teachersRef);
 
   if (!snapshot.exists()) {
@@ -112,6 +100,6 @@ export async function getAllTeachers(): Promise<Teacher[]> {
 
   return Object.entries(data).map(([id, teacher]) => ({
     id,
-    ...(teacher as Omit<Teacher, 'id'>),
+    ...(teacher as Omit<Teacher, "id">),
   }));
 }

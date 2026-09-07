@@ -1,67 +1,63 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
+import { useState, type CSSProperties } from "react";
+import Link from "next/link";
 
-import AuthModal from '@/components/AuthModal/AuthModal';
-import Container from '@/components/Container/Container';
-import Icon from '@/components/Icon/Icon';
-import { useAuth } from '@/hooks/useAuth';
+import AuthModal from "@/components/AuthModal/AuthModal";
+import Container from "@/components/Container/Container";
+import Icon from "@/components/Icon/Icon";
+import { themes } from "@/constants/themes";
+import { useAuth } from "@/hooks/useAuth";
+import { useTheme } from "@/hooks/useTheme";
 
-import styles from './Header.module.css';
+import styles from "./Header.module.css";
 
-type AuthMode = 'login' | 'register';
+type AuthMode = "login" | "register";
 
 export default function Header() {
-  const [authMode, setAuthMode] = useState<AuthMode | null>(
-    null,
-  );
+  const [authMode, setAuthMode] = useState<AuthMode | null>(null);
 
   const { user, logout, isLoading } = useAuth();
+  const { theme } = useTheme();
+
+  const currentTheme = themes[theme];
 
   const handleLogout = async () => {
     try {
       await logout();
     } catch (error) {
-      console.error('Failed to logout:', error);
+      console.error("Failed to logout:", error);
     }
   };
 
   return (
     <>
-      <header className={styles.header}>
+      <header
+        className={styles.header}
+        style={
+          {
+            "--theme-main": currentTheme.main,
+          } as CSSProperties
+        }
+      >
         <Container>
           <div className={styles.wrapper}>
             <Link href="/" className={styles.logo}>
-              <Icon
-                name="logo"
-                width={28}
-                height={28}
-              />
-
+              <Icon name="logo" width={28} height={28} />
               <span>LearnLingo</span>
             </Link>
 
             <nav className={styles.navigation}>
-              <Link
-                href="/"
-                className={styles.navLink}
-              >
+              <Link href="/" className={styles.navLink}>
                 Home
               </Link>
 
-              <Link
-                href="/teachers"
-                className={styles.navLink}
-              >
+              <Link href="/teachers" className={styles.navLink}>
                 Teachers
               </Link>
 
               {user && (
-                <Link
-                  href="/favorites"
-                  className={styles.navLink}
-                >
+                <Link href="/favorites" className={styles.navLink}>
                   Favorites
                 </Link>
               )}
@@ -72,8 +68,7 @@ export default function Header() {
                 {user ? (
                   <>
                     <span className={styles.userName}>
-                      {user.displayName ||
-                        user.email}
+                      {user.displayName || user.email}
                     </span>
 
                     <button
@@ -89,14 +84,13 @@ export default function Header() {
                     <button
                       type="button"
                       className={styles.loginButton}
-                      onClick={() =>
-                        setAuthMode('login')
-                      }
+                      onClick={() => setAuthMode("login")}
                     >
                       <Icon
                         name="log-in"
                         width={20}
                         height={20}
+                        className={styles.loginIcon}
                       />
 
                       <span>Log in</span>
@@ -104,12 +98,8 @@ export default function Header() {
 
                     <button
                       type="button"
-                      className={
-                        styles.registrationButton
-                      }
-                      onClick={() =>
-                        setAuthMode('register')
-                      }
+                      className={styles.registrationButton}
+                      onClick={() => setAuthMode("register")}
                     >
                       Registration
                     </button>
@@ -122,10 +112,7 @@ export default function Header() {
       </header>
 
       {authMode && (
-        <AuthModal
-          mode={authMode}
-          onClose={() => setAuthMode(null)}
-        />
+        <AuthModal mode={authMode} onClose={() => setAuthMode(null)} />
       )}
     </>
   );

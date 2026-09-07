@@ -47,7 +47,7 @@
   top: 8px;
   bottom: 2px;
 
-  background-color: var(--color-yellow-light);
+  background-color: var(--theme-light);
   border-radius: 8px;
 }
 
@@ -77,16 +77,8 @@
   line-height: 1.56;
 
   color: #121417;
-  background-color: var(--color-yellow);
 
   border-radius: 12px;
-
-  transition: background-color 200ms ease;
-}
-
-.button:hover,
-.button:focus {
-  background-color: var(--color-yellow-light);
 }
 
 .imageWrapper {
