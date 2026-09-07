@@ -37,14 +37,17 @@ export default function Hero() {
         </p>
 
         <Link
-          href="/teachers"
-          className={styles.button}
-          style={{
-            backgroundColor: currentTheme.main,
-          }}
-        >
-          Get started
-        </Link>
+  href="/teachers"
+  className={styles.button}
+  style={
+    {
+      '--button-main': currentTheme.main,
+      '--button-hover': currentTheme.light,
+    } as React.CSSProperties
+  }
+>
+  Get started
+</Link>
       </div>
 
       <div

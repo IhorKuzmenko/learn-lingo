@@ -1,6 +1,9 @@
 @import "modern-normalize";
 
 :root {
+  --black-color: #121417;
+  --white-color: #ffffff;
+
   --color-yellow: #f4c550;
   --color-yellow-light: #fbe9ba;
 
@@ -15,6 +18,8 @@
 
   --color-orange: #f0aa8d;
   --color-orange-light: #f4c8ba;
+
+  --color-light-gray: #f8f8f8;
 }
 
 *,
