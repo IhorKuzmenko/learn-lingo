@@ -1,68 +1,68 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 
-import Modal from "@/components/Modal/Modal";
-import { useAuth } from "@/hooks/useAuth";
-import { loginSchema, registerSchema } from "@/schemas/authSchema";
+import Icon from '@/components/Icon/Icon';
+import Modal from '@/components/Modal/Modal';
+import { useAuth } from '@/hooks/useAuth';
+import {
+  loginSchema,
+  registerSchema,
+  type AuthFormValues,
+} from '@/schemas/authSchema';
 
-import styles from "./AuthModal.module.css";
+import styles from './AuthModal.module.css';
 
 interface AuthModalProps {
-  mode: "login" | "register";
+  mode: 'login' | 'register';
   onClose: () => void;
 }
 
-interface AuthFormValues {
-  name?: string;
-  email: string;
-  password: string;
-}
-
-export default function AuthModal({ mode, onClose }: AuthModalProps) {
-  const [currentMode, setCurrentMode] = useState<"login" | "register">(mode);
-
-  const [authError, setAuthError] = useState("");
+export default function AuthModal({
+  mode,
+  onClose,
+}: AuthModalProps) {
+  const [showPassword, setShowPassword] = useState(false);
+  const [authError, setAuthError] = useState('');
 
   const { login, register: registerUser } = useAuth();
 
-  const isRegister = currentMode === "register";
-
-  const schema = isRegister ? registerSchema : loginSchema;
+  const isLogin = mode === 'login';
 
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors, isSubmitting },
   } = useForm<AuthFormValues>({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(
+      isLogin ? loginSchema : registerSchema,
+    ),
   });
-
-  const handleModeChange = (newMode: "login" | "register") => {
-    setCurrentMode(newMode);
-    setAuthError("");
-    reset();
-  };
 
   const onSubmit = async (values: AuthFormValues) => {
     try {
-      setAuthError("");
+      setAuthError('');
 
-      if (isRegister) {
-        await registerUser(values.name ?? "", values.email, values.password);
-      } else {
+      if (isLogin) {
         await login(values.email, values.password);
+      } else {
+        await registerUser(
+          values.name ?? '',
+          values.email,
+          values.password,
+        );
       }
 
       onClose();
     } catch (error) {
-      console.error(error);
+      console.error('Authentication failed:', error);
 
       setAuthError(
-        isRegister ? "Failed to create account." : "Invalid email or password.",
+        isLogin
+          ? 'Invalid email or password.'
+          : 'Failed to create account. Please try again.',
       );
     }
   };
@@ -71,27 +71,32 @@ export default function AuthModal({ mode, onClose }: AuthModalProps) {
     <Modal onClose={onClose}>
       <div className={styles.wrapper}>
         <h2 className={styles.title}>
-          {isRegister ? "Registration" : "Log In"}
+          {isLogin ? 'Log In' : 'Registration'}
         </h2>
 
         <p className={styles.description}>
-          {isRegister
-            ? "Thank you for your interest in our platform! In order to register, we need some information. Please provide us with the following information."
-            : "Welcome back! Please enter your credentials to access your account and continue your search for a teacher."}
+          {isLogin
+            ? 'Welcome back! Please enter your credentials to access your account and continue your search for a teacher.'
+            : 'Thank you for your interest in our platform! In order to register, we need some information. Please provide us with the following information.'}
         </p>
 
-        <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
-          {isRegister && (
+        <form
+          className={styles.form}
+          onSubmit={handleSubmit(onSubmit)}
+        >
+          {!isLogin && (
             <div className={styles.field}>
               <input
                 type="text"
                 placeholder="Name"
                 className={styles.input}
-                {...register("name")}
+                {...register('name')}
               />
 
               {errors.name && (
-                <p className={styles.error}>{errors.name.message}</p>
+                <p className={styles.error}>
+                  {errors.name.message}
+                </p>
               )}
             </div>
           )}
@@ -101,28 +106,57 @@ export default function AuthModal({ mode, onClose }: AuthModalProps) {
               type="email"
               placeholder="Email"
               className={styles.input}
-              {...register("email")}
+              {...register('email')}
             />
 
             {errors.email && (
-              <p className={styles.error}>{errors.email.message}</p>
+              <p className={styles.error}>
+                {errors.email.message}
+              </p>
             )}
           </div>
 
           <div className={styles.field}>
-            <input
-              type="password"
-              placeholder="Password"
-              className={styles.input}
-              {...register("password")}
-            />
+            <div className={styles.passwordWrapper}>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Password"
+                className={`${styles.input} ${styles.passwordInput}`}
+                {...register('password')}
+              />
+
+              <button
+                type="button"
+                className={styles.passwordToggle}
+                onClick={() =>
+                  setShowPassword((prev) => !prev)
+                }
+                aria-label={
+                  showPassword
+                    ? 'Hide password'
+                    : 'Show password'
+                }
+              >
+                <Icon
+                  name="eye-off"
+                  width={20}
+                  height={20}
+                />
+              </button>
+            </div>
 
             {errors.password && (
-              <p className={styles.error}>{errors.password.message}</p>
+              <p className={styles.error}>
+                {errors.password.message}
+              </p>
             )}
           </div>
 
-          {authError && <p className={styles.authError}>{authError}</p>}
+          {authError && (
+            <p className={styles.authError}>
+              {authError}
+            </p>
+          )}
 
           <button
             type="submit"
@@ -130,22 +164,12 @@ export default function AuthModal({ mode, onClose }: AuthModalProps) {
             disabled={isSubmitting}
           >
             {isSubmitting
-              ? "Please wait..."
-              : isRegister
-                ? "Sign Up"
-                : "Log In"}
+              ? 'Please wait...'
+              : isLogin
+                ? 'Log In'
+                : 'Sign Up'}
           </button>
         </form>
-
-        <button
-          type="button"
-          className={styles.switchButton}
-          onClick={() => handleModeChange(isRegister ? "login" : "register")}
-        >
-          {isRegister
-            ? "Already have an account? Log in"
-            : "Don’t have an account? Register"}
-        </button>
       </div>
     </Modal>
   );
